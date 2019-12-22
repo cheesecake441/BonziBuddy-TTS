@@ -20,6 +20,7 @@
     "nanoid": "^2.1.8",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
+    "simple-node-logger": "^18.12.23",
     "sleep": "^6.1.0",
     "sox": "^0.1.0",
     "uid-generator": "^2.0.0"

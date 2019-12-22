@@ -6,7 +6,16 @@ var express = require('express')
 var md5 = require('md5');
 var moment = require('moment');
 var mysql  = require('mysql');
+const nanoid = require('nanoid')
 const config = require('./config.json');
+var colors = require('colors');
+const SimpleNodeLogger = require('simple-node-logger'),
+    opts = {
+        logFilePath:'./bonziBuddy.log',
+        timestampFormat:'DD-MM-YYY HH:mm:ss.SSS'
+    },
+
+log = SimpleNodeLogger.createSimpleLogger( opts );
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -15,14 +24,13 @@ var connection = mysql.createConnection({
   database : 'bonziBuddy'
 });
 
-
 connection.on('connect', function(){
-  console.log("*** Connected to mySQL ***");
+  log.info("Connection to mysql established");
 });
 
 connection.connect();
 
-// Setup globals
+// Setup some global variables
 var today = moment().format();
 const port = 6969;
 
@@ -30,7 +38,7 @@ const port = 6969;
 var app = express()
 
 app.listen(port, function () {
-  console.log('Listening on port '+port)
+  log.info('Listening on port '+port);
 })
 
 //Setup SAPI4 variables
@@ -40,7 +48,7 @@ var speed = "157";
 
 // Download the TTS from SAPI4
 function download(url, dest, callback) {
-  console.log("*** Received TTS ***");
+  log.info("*** Received TTS request from user ***");
   var file = fs.createWriteStream(dest);
   var request = https.get(url, async function(response) {
     response.pipe(file);
@@ -60,6 +68,7 @@ app.get('/play', function (req, res) {
     var message = req.query.text;
     var SAPI4 = "https://tetyys.com/SAPI4/SAPI4?text=" + message + "&voice=" + voice + "&pitch=" + pitch + "&speed=" + speed;
     
+    //Setup filenames
     var dateString = md5(today);
     var fileToBeDeleted = 'TTS/'+dateString+'.wav';
 
@@ -69,10 +78,10 @@ app.get('/play', function (req, res) {
     // Trigger the downloading using above params
     download(SAPI4, fileToBeDeleted, function(err){
         if(err){
-            console.log("*** Error downloading TTS ***");
-            console.error(err);
+            log.error("*** Error downloading TTS ***");
+            log.error(err);
         }else{
-            console.log("*** Download complete ***");
+            log.info("*** Download complete ***");
             job.start();
         }
     });
@@ -87,15 +96,29 @@ app.get('/play', function (req, res) {
     });
     job.on('error', function(err) {
       job.statusCode = 500;  
-      console.log("uWu I did a fucky "+job.statusCode);
+      console.log("uWu I made a fucky: "+job.statusCode);
+      log.error(err);
     });
     job.on('end', function() {
-        console.log("\n*** File has been transcoded ***");
-        console.log("*** Sending to User ***");
+        log.info("*** File has been transcoded ***");
+        log.info("*** Sending to User ***");
         res.setHeader('content-type', 'audio/wav');
         res.download(encryptedFilename);
         fs.unlinkSync(fileToBeDeleted)
-        console.log("Done.");
+        
+        connection.query(`INSERT INTO bonziBuddy.SAPI4 (ttsMessage, voice, filename, timestamp) VALUES ('${message}', 'bonzi', '${encryptedFilename}', '${today}')`, function(error, results, fields){
+          if(error) {
+            connection.statusCode = 418;
+            console.log("uWu I made a fucky: "+connection.statusCode);
+            log.error(err);
+          }else{
+            log.info("*** mySQL records inserted ***");
+          }
+        });
+        
+        connection.end();
+        
+        log.info("Done.");
     });
 
 });
