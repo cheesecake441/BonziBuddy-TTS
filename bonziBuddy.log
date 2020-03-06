@@ -157,3 +157,35 @@ sox FAIL formats: can't open input file `TTS/9e805a64b304176e2a5532aa39a6cfba.wa
     at Socket.<anonymous> (internal/child_process.js:441:11)
     at Socket.emit (events.js:316:20)
     at Pipe.<anonymous> (net.js:672:12) 
+06-03-202020 12:32:33.547 INFO  Listening on port 6969 
+06-03-202020 12:32:33.551 INFO  Connection to mysql established 
+06-03-202020 12:32:46.354 INFO  *** Received TTS request from user *** 
+06-03-202020 12:32:46.665 INFO  *** Download complete *** 
+06-03-202020 12:32:46.766 ERROR Command failed: sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav
+sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found
+
+{"killed":false,"code":1,"signal":null,"cmd":"sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav","stdout":"","stderr":"sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found\n","args":["--info","-D","TTS/29146e8106ede276fac3599455dc62a9.wav"]}
+Error: Command failed: sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav
+sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found
+
+    at ChildProcess.exithandler (child_process.js:303:12)
+    at ChildProcess.emit (events.js:316:20)
+    at maybeClose (internal/child_process.js:1026:16)
+    at Socket.<anonymous> (internal/child_process.js:441:11)
+    at Socket.emit (events.js:316:20)
+    at Pipe.<anonymous> (net.js:672:12) 
+06-03-202020 12:32:57.926 INFO  *** Received TTS request from user *** 
+06-03-202020 12:32:59.071 INFO  *** Download complete *** 
+06-03-202020 12:32:59.172 ERROR Command failed: sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav
+sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found
+
+{"killed":false,"code":1,"signal":null,"cmd":"sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav","stdout":"","stderr":"sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found\n","args":["--info","-D","TTS/29146e8106ede276fac3599455dc62a9.wav"]}
+Error: Command failed: sox --info -D TTS/29146e8106ede276fac3599455dc62a9.wav
+sox FAIL formats: can't open input file `TTS/29146e8106ede276fac3599455dc62a9.wav': WAVE: RIFF header not found
+
+    at ChildProcess.exithandler (child_process.js:303:12)
+    at ChildProcess.emit (events.js:316:20)
+    at maybeClose (internal/child_process.js:1026:16)
+    at Socket.<anonymous> (internal/child_process.js:441:11)
+    at Socket.emit (events.js:316:20)
+    at Pipe.<anonymous> (net.js:672:12) 
