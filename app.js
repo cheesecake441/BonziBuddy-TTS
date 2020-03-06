@@ -96,7 +96,7 @@ app.get('/play', function (req, res) {
     });
     job.on('error', function(err) {
       job.statusCode = 500;  
-      console.log("uWu I made a fucky: "+job.statusCode);
+      console.error(today + job.statusCode + " - uWu I made a fucky: ");
       log.error(err);
     });
     job.on('end', function() {
@@ -109,7 +109,7 @@ app.get('/play', function (req, res) {
         connection.query(`INSERT INTO bonziBuddy.SAPI4 (ttsMessage, voice, filename, timestamp) VALUES ('${message}', 'bonzi', '${encryptedFilename}', '${today}')`, function(error, results, fields){
           if(error) {
             connection.statusCode = 418;
-            console.log("uWu I made a fucky: "+connection.statusCode);
+            console.error(today + connection.statusCode + " - uWu I made a fucky: ");
             log.error(err);
           }else{
             log.info("*** mySQL records inserted ***");
