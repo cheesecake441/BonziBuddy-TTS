@@ -17,40 +17,13 @@ var sox = require('sox');
 var express = require('express')
 var md5 = require('md5');
 var moment = require('moment');
-var mysql  = require('mysql');
-const nanoid = require('nanoid')
-const config = require('./config.json');
-var colors = require('colors');
-const SimpleNodeLogger = require('simple-node-logger'),
-    opts = {
-        logFilePath:'./bonziBuddy.log',
-        timestampFormat:'DD-MM-YYY HH:mm:ss.SSS'
-    },
-
-log = SimpleNodeLogger.createSimpleLogger( opts );
-
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : config.username,
-  password : config.password,
-  database : 'bonziBuddy'
-});
-
-connection.on('connect', function(){
-  log.info("Connection to mysql established");
-});
-
-connection.connect();
-
-// Setup some global variables
-var today = moment().format();
-const port = 6969;
 
 // Initialize the listener!
+var port = 6969;
 var app = express()
 
 app.listen(port, function () {
-  log.info('Listening on port '+port);
+  console.log(`=== Listening on port ${port} ===`)
 })
 
 //Setup SAPI4 variables
@@ -60,15 +33,14 @@ var speed = "157";
 
 // Download the TTS from SAPI4
 function download(url, dest, callback) {
-  log.info("*** Received TTS request from user ***");
   var file = fs.createWriteStream(dest);
   var request = https.get(url, async function(response) {
     response.pipe(file);
     file.on('finish', function () {
-      file.close(callback); // close() is async, call callback after close completes.
+      file.close(callback);
     });
     file.on('error', function (err) {
-      fs.unlink(dest); // Delete the file async.
+      fs.unlink(dest);
       if (callback)
         callback(err.message);
     });
@@ -78,9 +50,11 @@ function download(url, dest, callback) {
 // Triggered when the user sets params
 app.get('/play', function (req, res) {
     var message = req.query.text;
+    console.log(`Generating TTS message {${message}}`);
     var SAPI4 = "https://tetyys.com/SAPI4/SAPI4?text=" + message + "&voice=" + voice + "&pitch=" + pitch + "&speed=" + speed;
-    
-    //Setup filenames
+  
+    //Setup filename & locations
+    var today = moment().format('MM-DD-YYYY HH:mm:ss');
     var dateString = md5(today);
     var fileToBeDeleted = 'TTS/'+dateString+'.wav';
 
@@ -90,10 +64,10 @@ app.get('/play', function (req, res) {
     // Trigger the downloading using above params
     download(SAPI4, fileToBeDeleted, function(err){
         if(err){
-            log.error("*** Error downloading TTS ***");
-            log.error(err);
+            err.code = 001
+            console.error(err.code + "uWu - I made a fucky");
+            console.error(err);
         }else{
-            log.info("*** Download complete ***");
             job.start();
         }
     });
@@ -107,30 +81,21 @@ app.get('/play', function (req, res) {
         compressionQuality: 5,
     });
     job.on('error', function(err) {
-      job.statusCode = 500;  
-      console.error(today + job.statusCode + " - uWu I made a fucky: ");
-      log.error(err);
+        job.code = 500;  
+        console.error(job.code+" - uWu I made a fucky ");
+        console.error(err);
     });
     job.on('end', function() {
-        log.info("*** File has been transcoded ***");
-        log.info("*** Sending to User ***");
+        console.log("*** File has been transcoded ***");
+        console.log("*** Sending to User ***");
+
+        // Set filetype as WAV & Send
         res.setHeader('content-type', 'audio/wav');
         res.download(encryptedFilename);
-        fs.unlinkSync(fileToBeDeleted)
-        
-        connection.query(`INSERT INTO bonziBuddy.SAPI4 (ttsMessage, voice, filename, timestamp) VALUES ('${message}', 'bonzi', '${encryptedFilename}', '${today}')`, function(error, results, fields){
-          if(error) {
-            connection.statusCode = 418;
-            console.error(today + connection.statusCode + " - uWu I made a fucky: ");
-            log.error(err);
-          }else{
-            log.info("*** mySQL records inserted ***");
-          }
-        });
-        
-        connection.end();
-        
-        log.info("Done.");
+
+        //Cleanup & Say Goodbye
+        fs.unlinkSync(fileToBeDeleted);
+        console.log("---DONE---");
     });
 
 });
