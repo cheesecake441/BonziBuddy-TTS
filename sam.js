@@ -37,10 +37,10 @@ function download(url, dest, callback) {
   var request = https.get(url, async function(response) {
     response.pipe(file);
     file.on('finish', function () {
-      file.close(callback); // close() is async, call callback after close completes.
+      file.close(callback);
     });
     file.on('error', function (err) {
-      fs.unlink(dest); // Delete the file async.
+      fs.unlink(dest);
       if (callback)
         callback(err.message);
     });
@@ -99,3 +99,18 @@ app.get('/play', function (req, res) {
     });
 
 });
+
+/**
+ *  This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
