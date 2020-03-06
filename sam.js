@@ -1,3 +1,15 @@
+/**
+  * Microsoft Sam TTS Generator
+  * 1) Initialise script and start listener
+  * 2) Connect to SAPI4 site and download requested message
+  * 3) Transcode message to 8000hz
+  * 4) Download and cleanup
+  * 
+  * @license GPL-3.0
+  * @version 1.2
+  * @author Thomas Stephen Palmer
+**/
+
 //Import required modules
 const https = require('https');
 const fs = require('fs');
