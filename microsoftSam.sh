@@ -13,4 +13,4 @@ echo "Please enter the text you would like to use, followed by [ENTER]: "
 read bonziText
 fi
 
-curl -G --data-urlencode "text=$bonziText" localhost:2753/play > /mnt/c/Users/FiercePC/Desktop/tts_cache/sam$(date +%Y%m%d-%H%M%S).wav
+curl -G --data-urlencode "text=$bonziText" localhost:3000/play > ./sam$(date +%Y%m%d-%H%M%S).wav
