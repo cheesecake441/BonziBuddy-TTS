@@ -1,3 +1,15 @@
+/**
+  * Microsoft Sam TTS Generator
+  * 1) Initialise script and start listener
+  * 2) Connect to SAPI4 site and download requested message
+  * 3) Transcode message to 8000hz
+  * 4) Download and cleanup
+  * 
+  * @license GPL-3.0
+  * @version 1.2
+  * @author Thomas Stephen Palmer
+**/
+
 //Import required modules
 const https = require('https');
 const fs = require('fs');
@@ -5,10 +17,6 @@ var sox = require('sox');
 var express = require('express')
 var md5 = require('md5');
 var moment = require('moment');
-
-//Say hello and set timestamp
-console.log("---TTS Script Running---");
-var today = moment().format('MM-DD-YYYY HH:mm:ss');
 
 // Initialize the listener!
 var port = 3000;
@@ -45,6 +53,8 @@ app.get('/play', function (req, res) {
     console.log(`Generating TTS message {${message}}`);
     var SAPI4 = "https://tetyys.com/SAPI4/SAPI4?text=" + message + "&voice=" + voice + "&pitch=" + pitch + "&speed=" + speed;
   
+    //Setup filename & locations
+    var today = moment().format('MM-DD-YYYY HH:mm:ss');
     var dateString = md5(today);
     var fileToBeDeleted = 'TTS/'+dateString+'.wav';
 
@@ -58,7 +68,6 @@ app.get('/play', function (req, res) {
             console.error(err.code + "uWu - I made a fucky");
             console.error(err);
         }else{
-            //console.log("*** Download complete ***");
             job.start();
         }
     });
@@ -85,7 +94,7 @@ app.get('/play', function (req, res) {
         res.download(encryptedFilename);
 
         //Cleanup & Say Goodbye
-        fs.unlinkSync(fileToBeDeleted); //delete unencoded file
+        fs.unlinkSync(fileToBeDeleted);
         console.log("---DONE---");
     });
 
